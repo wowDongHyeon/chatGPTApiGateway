@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>블로그 자동화</title>
+    <style>
+        /* 기존 CSS 스타일 */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            text-align: center;
+            padding: 50px;
+        }
+
+        h1 {
+            color: #4a7eb0;
+        }
+
+        form {
+            width: 100%; /* 폼의 가로 길이를 두 배로 늘림 */
+            max-width: 1000px; /* 최대 가로 길이 설정 */
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin: 20px auto;
+        }
+
+        label, input[type="text"], input[type="submit"] {
+            display: block;
+            width: 80%;
+            margin: 10px auto;
+        }
+
+        label {
+            font-weight: bold;
+            color: #555;
+            text-align: left;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        input[type="submit"] {
+            background-color: #4a7eb0;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #3a6d8c;
+        }
+
+        #response {
+            width: 100%; /* 응답 영역의 가로 길이 설정 */
+            max-width: 1000px; /* 최대 가로 길이 설정 */
+            background-color: #fff;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>블로그 자동화</h1>
+    <form id="myForm">
+        <label for="question1">어떤 주제의 IT에 관련되어서 블로그를 작성하실건가요?</label>
+        <input type="text" id="question1" name="question1">
+
+        <label for="question2">관련된 IT 키워드 4가지만 작성해주세요.</label>
+        <input type="text" id="question2" name="question2">
+
+        <label for="question3">어떤 형식의 글을 작성할까요?</label>
+        <input type="text" id="question3" name="question3">
+
+        <label for="question4">원하시는 거 자유롭게 아무거나 작성해주세요.</label>
+        <input type="text" id="question4" name="question4"><br>
+
+        <input type="submit" value="제출">
+    </form>
+
+    <div id="response"></div>
+
+    <script>
+        // JavaScript 코드
+        document.getElementById('myForm').onsubmit = function(event) {
+          event.preventDefault();
+
+          var question1Value = document.getElementById('question1').value;
+          var question2Value = document.getElementById('question2').value;
+          var question3Value = document.getElementById('question3').value;
+          var question4Value = document.getElementById('question4').value;
+
+          var assistant = "너는 IT 블로그를 3000개 이상 쓴 전문가야. 특정 IT 키워드를 너에게 제공하면 너는 해당 키워드와 관련되어서 자동으로 글을 써주는 역할을 하고 있어.";
+          var myString = ["아래 내용에 관련된 내용으로 블로그글를 작성해줘.",
+          "- IT 블로그글을 작성할거야.",
+          "- 가장 상위 키워드는 " + question1Value + "야.",
+          "- 그 밑에 하위키워드는" + question2Value + "야.",
+          "- 위의 상위 키워드와 하위 키워드와 관련된 프로젝트 경험 2가지도 넣어줘.",
+          "- 글의 형식은" + question3Value +"이렇게 작성해줘.",
+          "- " + question4Value].join("\n");
+
+          // var myString = "안녕";
+          // POST 요청으로 데이터를 서버에 보냅니다.
+          fetch('http://127.0.0.1:3000/chat', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ message: myString })
+          })
+          .then(response => {
+              if (!response.ok) {
+                  throw new Error(`HTTP error! status: ${response.status}`);
+              }
+              return response.json();
+          })
+          .then(data => {
+              document.getElementById('response').innerText = JSON.stringify(data, null, 2);
+          })
+          .catch(error => {
+              console.error('Error:', error);
+              document.getElementById('response').innerText = 'Error fetching data';
+          });
+      };
+
+    </script>
+</body>
+</html>
